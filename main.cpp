@@ -19,7 +19,7 @@ public:
 
     ~matrix() {}
 
-    matrix<T> inverse() const{
+    matrix inverse() const{
         if (rows != cols) throw std::invalid_argument("For inverse rows matrix must = cols matrix");
 
         size_t n = rows;
