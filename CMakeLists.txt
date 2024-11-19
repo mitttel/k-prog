@@ -3,4 +3,6 @@ project(k_prog)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(k_prog main.cpp)
+add_executable(k_prog main.cpp
+        matrix.cpp
+        matrix.h)
