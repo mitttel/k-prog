@@ -1,0 +1,3 @@
+C:/Users/461/CLionProjects/k-prog/cmake-build-debug/CMakeFiles/k_prog.dir
+C:/Users/461/CLionProjects/k-prog/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/461/CLionProjects/k-prog/cmake-build-debug/CMakeFiles/rebuild_cache.dir
