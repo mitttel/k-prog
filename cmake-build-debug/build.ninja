@@ -51,13 +51,13 @@ build cmake_object_order_depends_target_k_prog: phony || .
 
 build CMakeFiles/k_prog.dir/main.cpp.obj: CXX_COMPILER__k_prog_unscanned_Debug C$:/Users/461/CLionProjects/k-prog/main.cpp || cmake_object_order_depends_target_k_prog
   DEP_FILE = CMakeFiles\k_prog.dir\main.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  FLAGS = -finput-charset=UTF-8 -g -std=gnu++20 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\k_prog.dir
   OBJECT_FILE_DIR = CMakeFiles\k_prog.dir
 
 build CMakeFiles/k_prog.dir/matrix.cpp.obj: CXX_COMPILER__k_prog_unscanned_Debug C$:/Users/461/CLionProjects/k-prog/matrix.cpp || cmake_object_order_depends_target_k_prog
   DEP_FILE = CMakeFiles\k_prog.dir\matrix.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
+  FLAGS = -finput-charset=UTF-8 -g -std=gnu++20 -fdiagnostics-color=always
   OBJECT_DIR = CMakeFiles\k_prog.dir
   OBJECT_FILE_DIR = CMakeFiles\k_prog.dir
 
@@ -70,7 +70,7 @@ build CMakeFiles/k_prog.dir/matrix.cpp.obj: CXX_COMPILER__k_prog_unscanned_Debug
 # Link the executable k_prog.exe
 
 build k_prog.exe: CXX_EXECUTABLE_LINKER__k_prog_Debug CMakeFiles/k_prog.dir/main.cpp.obj CMakeFiles/k_prog.dir/matrix.cpp.obj
-  FLAGS = -g
+  FLAGS = -finput-charset=UTF-8 -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\k_prog.dir
   POST_BUILD = cd .

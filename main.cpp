@@ -17,45 +17,44 @@ public:
 
     matrix(const matrix& other) : rows(other.rows), cols(other.cols), data(other.data) {}
 
-    ~matrix() {}
+    ~matrix() = default;
 
-    matrix<T> inverse() const{
+    [[nodiscard]] matrix inverse() const{
         if (rows != cols) throw std::invalid_argument("For inverse rows matrix must = cols matrix");
 
         size_t n = rows;
-        matrix doublematrix(n, 2*n);
+        matrix DoubleMatrix(n, 2*n);
         for(size_t i = 0; i < n; ++i){
             for(size_t j = 0; j < n; ++j){
-                doublematrix.data[i][j] = data[i][j];
+                DoubleMatrix.data[i][j] = data[i][j];
             }
-            doublematrix.data[i][n + i] = 1;
+            DoubleMatrix.data[i][n + i] = 1;
         }
-
         for(size_t i = 0; i < n; ++i){
-            T pivot = doublematrix.data[i][i];
-            if(std::abs(pivot) = 1e-9) throw std::runtime_error("Matrix is singular and cannot be inverted.");
+            T pivot = DoubleMatrix.data[i][i];
+            if(std::abs(pivot) < 1e-9) throw std::runtime_error("Matrix is singular and cannot be inverted.");
 
             for(size_t j = 0; j < 2*n; ++j){
-                doublematrix.data[i][j] /= pivot;
+                DoubleMatrix.data[i][j] /= pivot;
             }
             for(size_t k = 0; k < n; ++k){
                 if(k != i){
-                    T factor = doublematrix.data[k][i];
+                    T factor = DoubleMatrix.data[k][i];
                     for(size_t j = 0; j < 2*n; ++j){
-                        doublematrix.data[k][j] -= factor * doublematrix.data[i][j];
+                        DoubleMatrix.data[k][j] -= factor * DoubleMatrix.data[i][j];
                     }
                 }
             }
         }
 
-        matrix invers(n, n);
+        matrix inv(n, n);
         for(size_t i = 0; i < n; ++i){
             for(size_t j = 0; j < n; ++j){
-                invers.data[i][j] = doublematrix.data[i][j + n];
+                inv.data[i][j] = DoubleMatrix.data[i][j + n];
             }
         }
-        return invers;
 
+        return inv;
     }
 
     // ======================================================================================================================
@@ -68,7 +67,7 @@ public:
         return *this;
     }
 
-    bool operator == (const matrix& other) const{ // показываем, что мы ничего не делаем с объектом
+    bool operator == (const matrix& other) const{
         return this->data == other.data;
     }
 
@@ -78,7 +77,7 @@ public:
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     matrix operator + (const matrix& other) const{
-        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nfor operator +, the dimensions of the matrices must match\n");
+        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nFor operator +, the dimensions of the matrices must match\n");
         matrix result(rows, cols);
         for(size_t i = 0; i < rows; ++i){
             for(size_t j = 0; j < cols; ++j){
@@ -104,7 +103,7 @@ public:
 
 
     matrix& operator += (const matrix& other){
-        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nfor operator +, the dimensions of the matrices must match\n");
+        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nFor operator +, the dimensions of the matrices must match\n");
         for(size_t i = 0; i < rows; ++i){
             for(size_t j = 0; j < cols; ++j){
                 data[i][j] += other.data[i][j];
@@ -117,18 +116,18 @@ public:
         for(auto& row : data)
             for(auto& item : row)
                 ++item;
-        return this;
+        return *this;
     }
 
     matrix operator ++ (int){
-        matrix temp(*this); // чтобы вернуть после инкрементации(увеличении элемента на единицу)
+        matrix temp(*this);
         ++(*this);
         return temp;
     }
 
     //----------------------------------------------------------------------------------------------------------------------------------------------------------------
     matrix operator - (const matrix& other) const{
-        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nfor operator -, the dimensions of the matrices must match\n");
+        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nFor operator -, the dimensions of the matrices must match\n");
         matrix result(rows, cols);
         for(size_t i = 0; i < rows; ++i){
             for(size_t j = 0; j < cols; ++j){
@@ -160,7 +159,7 @@ public:
 
 
     matrix& operator -= (const matrix& other){
-        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nfor operator -, the dimensions of the matrices must match\n");
+        if(rows != other.rows || cols != other.cols) throw std::invalid_argument("\nFor operator -=, the dimensions of the matrices must match\n");
         for(size_t i = 0; i < rows; ++i){
             for(size_t j = 0; j < cols; ++j){
                 data[i][j] -= other.data[i][j];
@@ -173,7 +172,7 @@ public:
         for(auto& row : data)
             for(auto& item : row)
                 --item;
-        return this;
+        return *this;
     }
 
     matrix operator -- (int){
@@ -210,25 +209,8 @@ public:
     friend matrix operator * (T scalar, const matrix& other){
         return other * scalar;
     }
-
-
-    matrix& operator *= (const matrix& other){
-        if(cols != other.rows) throw std::invalid_argument("\nfor operator *, cols matrix 1 must = rows matrix 2\n");
-        matrix result(rows, other.cols);
-
-        for(size_t i = 0; i < rows; ++i){
-            for(size_t j = 0; j < other.cols; ++j){
-                result.data[i][j] = T();
-                for(size_t k = 0; k < cols; ++k){
-                    result.data[i][j] += data[i][k] * other.data[k][j];
-                }
-            }
-        }
-        *this = result;
-        return *this;
-    }
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    matrix operator / (const matrix& other) const{
+    matrix operator / (const matrix& other){
         return *this * other.inverse();
     }
 
@@ -249,14 +231,6 @@ public:
                 result.data[i][j] = scalar / other.data[i][j];
             }
         }
-        return result;
-    }
-
-
-    matrix& operator /= (const matrix& other){
-        if(cols != other.rows) throw std::invalid_argument("\nfor operator *, cols matrix 1 must = rows matrix 2\n");
-        matrix result(rows, other.cols);
-        //tytyytytyt
         return result;
     }
     //()((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((()))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))
@@ -281,6 +255,49 @@ public:
 
     // func
 
+    [[nodiscard]] T determinant() const {
+        if (rows != cols) {
+            throw std::invalid_argument("Matrix does not have square matrix");
+        }
+
+        size_t n = rows;
+        matrix temp = *this;
+        T det = 1;
+        bool isSwapped = false;
+
+        for (size_t i = 0; i < n; ++i) {
+            size_t maxRow = i;
+            for (size_t k = i + 1; k < n; ++k) {
+                if (std::abs(temp(k, i)) > std::abs(temp(maxRow, i))) {
+                    maxRow = k;
+                }
+            }
+
+            if (std::abs(temp(maxRow, i)) < 1e-9) {
+                return 0;
+            }
+            if (i != maxRow) {
+                std::swap(temp.data[i], temp.data[maxRow]);
+                isSwapped = !isSwapped;
+            }
+
+            for (size_t k = i + 1; k < n; ++k) {
+                T factor = temp(k, i) / temp(i, i);
+                for (size_t j = i; j < n; ++j) {
+                    temp(k, j) -= factor * temp(i, j);
+                }
+            }
+
+            det *= temp(i, i);
+        }
+
+        if (isSwapped) {
+            det = -det;
+        }
+
+        return det;
+    }
+
     void print() const{
         for(const auto& row : data){
             for(const auto& item : row){
@@ -300,14 +317,12 @@ int main(){
     printf("Matrix 2\n");
     goida.print();
 
-    // операторы присваивания
-    printf("\nOPERATORS != = ==\n");
-    printf("Matrix 1 == Matrix 2 : %d\n", (int) (baza==goida));
+    // операторы присваивания===========================================================================================
+    printf("\nOPERATORS =\n");
     goida = baza;
     printf("Matrix 1 = Matrix 2\n");
-    printf("Matrix 1 == Matrix 2 : %d\n", (int) (baza!=goida));
 
-    // операторы + - * /
+    // операторы + - * /================================================================================================
     printf("\n+ OPERATORS +\n");
     printf("Matrix 1\n");
     baza.print();
@@ -367,14 +382,17 @@ int main(){
     ///////////////////////////////////////////////////////////
     printf("\n/ OPERATORS /\n");
     printf("Matrix 1\n");
+    baza(1, 1) = baza(2, 1) = 150;
     baza.print();
+    goida(2, 2) = goida(2, 1) = 152;
+    goida(1, 1) = 53;
     printf("\n");
     printf("Matrix 2\n");
     goida.print();
 
-    //temp = baza / goida;
-    //printf("\nMatrix 1 / Matrix 2 : \n");
-    //temp.print();
+    temp = baza * goida.inverse();
+    printf("\nMatrix 1 / Matrix 2 : \n");
+    temp.print();
     temp = goida / 5;
     printf("\nMatrix 1 / 5 : \n");
     temp.print();
@@ -382,7 +400,7 @@ int main(){
     printf("\n104 / Matrix 1 : \n");
     temp.print();
 
-    //Арифметика с накоплением (+=,-=);
+    //Арифметика с накоплением (+=,-=);================================================================================
     printf("\n\n ============================= \n\n");
     //+=+=+=+=+=
     printf("\n+= OPERATORS +=\n");
@@ -409,19 +427,36 @@ int main(){
     printf("\nMatrix 2 -= Matrix 1\n");
     goida.print();
 
-    //********************************************** */
-    printf("\n*= OPERATORS *=\n");
+    //Унарные (++,--) в префиксной и постфиксной форме;
+
+    //++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++ ++
+    printf("\n++ OPERATORS ++\n");
     printf("Matrix 1\n");
     baza.print();
-    printf("\n");
-    printf("Matrix 2\n");
-    goida.print();
+    printf("\n++Matrix 1\n");
+    ++baza;
+    baza.print();
+    printf("\nMatrix 1++\n");
+    baza++;
+    baza.print();
 
-    goida *= baza;
-    printf("\nMatrix 2 *= Matrix 1\n");
-    goida.print();
-    //Унарные (++,--) в префиксной и постфиксной форме;
+    //-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+    printf("\n-- OPERATORS --\n");
+    printf("Matrix 1\n");
+    baza.print();
+    printf("\n--Matrix 1\n");
+    --baza;
+    baza.print();
+    printf("\nMatrix 1--\n");
+    baza--;
+    baza.print();
+
     //Логические (<, >, ==, != );
+    printf("\nOPERATORS <, >, ==, != \n");
+
+    printf("Matrix 1 == Matrix 2 : %d\n", static_cast<int>(baza == goida));
+    printf("Matrix 1 != Matrix 2 : %d\n", static_cast<int>(baza != goida));
+    printf("%d\n", goida.determinant());
     //Операторы взятия элемента ( [] или () ) по номеру или ключу;
     //Операторы преобразования типа к любому базовому.
 }
